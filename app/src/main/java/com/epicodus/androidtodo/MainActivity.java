@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkForAuthenticatedUser();
 
         mNewTaskButton.setOnClickListener(this);
-
-        setupFirebaseQuery();
-        setupRecyclerView();
     }
 
     @Override
@@ -57,11 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkForAuthenticatedUser() {
-        AuthData authData = mFirebaseRef.getAuth();
-        if (authData == null) {
-            goToLoginActivity();
-        } else {
+        if (mFirebaseRef.getAuth() != null) {
             mCurrentUserId = mFirebaseRef.getAuth().getUid();
+            setupFirebaseQuery();
+            setupRecyclerView();
+        } else {
+            goToLoginActivity();
         }
     }
 
@@ -79,11 +77,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void createTask(String title, String description) {
         Task task = new Task(title, description);
 
-        Firebase userRef = mFirebaseRef.child(mCurrentUserId.toString());
-        Firebase taskRef = userRef.push();
-        Log.d("NEW ID", taskRef.toString());
-        task.setRef(taskRef.toString());
-        taskRef.setValue(task);
+        mFirebaseRef.child(mCurrentUserId)
+            .push()
+            .setValue(task);
     }
 
     @Override

@@ -1,16 +1,28 @@
 package com.epicodus.androidtodo.adapters;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.epicodus.androidtodo.AndroidToDoApplication;
+import com.epicodus.androidtodo.MainActivity;
 import com.epicodus.androidtodo.R;
 import com.epicodus.androidtodo.model.Task;
 import com.epicodus.androidtodo.util.FirebaseRecyclerAdapter;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.MutableData;
 import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
+import com.firebase.client.snapshot.IndexedNode;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Guest on 3/29/16.
@@ -28,14 +40,18 @@ public class FirebaseToDoListAdapter extends FirebaseRecyclerAdapter<ToDoListVie
     }
 
     @Override
-    public void onBindViewHolder(ToDoListViewHolder holder, final int position) {
+    public void onBindViewHolder(final ToDoListViewHolder holder, int position) {
         holder.bindTask(getItem(position));
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Task task = getItem(position);
-                Firebase ref = new Firebase(task.getRef());
-                ref.removeValue();
+                //can't use position argument here since position will change as items get deleted
+                //use holder.getAdapterPosition() instead
+                Task taskClickedOn = getItem(holder.getAdapterPosition());
+
+                Firebase firebaseRef = AndroidToDoApplication.getAppInstance().getFirebaseRef();
+                Firebase userRef = firebaseRef.child(firebaseRef.getAuth().getUid().toString());
+                addDeleteListener(taskClickedOn, userRef);
             }
         });
     }
@@ -57,6 +73,37 @@ public class FirebaseToDoListAdapter extends FirebaseRecyclerAdapter<ToDoListVie
     @Override
     protected void itemMoved(Task item, String key, int oldPosition, int newPosition) {
 
+    }
+
+    private void addDeleteListener(final Task taskClickedOn, final Firebase userRef) {
+        userRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Task thisTask = dataSnapshot.getValue(Task.class);
+                if (thisTask.equals(taskClickedOn)) {
+                    dataSnapshot.getRef().removeValue();
+                    notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
     }
 
 }

@@ -1,10 +1,11 @@
 package com.epicodus.androidtodo.model;
 
 
+import java.util.Objects;
+
 public class Task {
     String title;
     String description;
-    String ref;
 
     public Task() {}
 
@@ -29,11 +30,14 @@ public class Task {
         description = newDescription;
     }
 
-    public void setRef(String newRef) {
-        ref = newRef;
-    }
-
-    public String getRef() {
-        return ref;
+    @Override
+    public boolean equals(Object otherObject) {
+        if (!(otherObject instanceof Task)) {
+            return false;
+        } else {
+            Task otherTask = (Task) otherObject;
+            return this.getTitle().equals(otherTask.getTitle()) &&
+                    this.getDescription().equals(otherTask.getDescription());
+        }
     }
 }

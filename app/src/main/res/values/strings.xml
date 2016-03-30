@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">To Do</string>
-    <string name="firebase_url">https://mytdl.firebaseio.com</string>
+    <string name="firebase_url">https://my-to-do-list-app.firebaseio.com</string>
 </resources>
