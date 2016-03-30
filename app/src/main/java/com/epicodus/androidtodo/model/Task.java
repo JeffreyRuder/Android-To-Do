@@ -2,27 +2,38 @@ package com.epicodus.androidtodo.model;
 
 
 public class Task {
-    private String mTitle;
-    private String mDescription;
+    String title;
+    String description;
+    String ref;
+
+    public Task() {}
 
     public Task(String title, String description) {
-        mTitle= title;
-        mDescription = description;
+        this.title = title;
+        this.description = description;
     }
 
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     public void setTitle(String newTitle) {
-        mTitle = newTitle;
+        title = newTitle;
     }
 
     public void setDescription(String newDescription) {
-        mDescription = newDescription;
+        description = newDescription;
+    }
+
+    public void setRef(String newRef) {
+        ref = newRef;
+    }
+
+    public String getRef() {
+        return ref;
     }
 }
